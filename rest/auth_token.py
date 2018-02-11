@@ -11,8 +11,11 @@ class AuthToken:
         self.app = app
         self.black_list_token = BlacklistToken(app)
 
-    async def check_token(self, auth_token):
-        logging.debug(f'check_token : {auth_token}')
+    async def check_token(self, request):
+        if "Autorization" not in request.headers:
+            return False
+
+        auth_token = request.headers['Authorization']
         if not auth_token:
             return False
 

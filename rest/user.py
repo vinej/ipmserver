@@ -13,7 +13,7 @@ class UserModel:
         """
         self.id = m_id
         self.email = email
-        self.password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+        self.password = password
         self.registered_on = datetime.datetime.now()
         self.admin = admin
 
@@ -43,7 +43,7 @@ class User:
         db = self.app.mongo[api_database]
         try:
             d = dict(email=email,
-                     password=password,
+                     password=bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt()),
                      admin=admin,
                      register_on=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             mongo_id = await db.users.insert(d)

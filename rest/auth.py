@@ -53,6 +53,7 @@ class Auth:
         try:
             # fetch the user data
             the_user = await self.user.get_user(post_data.get('email'))
+            print(the_user.password)
             if the_user and bcrypt.checkpw(post_data.get('password').encode('utf8'), the_user.password):
                 auth_token = self.auth_token.encode_auth_token(the_user.id)
                 if auth_token:
@@ -127,7 +128,7 @@ class Auth:
             auth_token = ''
 
         if auth_token:
-            resp = self.auth_token.decode_auth_token(auth_token)
+            resp = await self.auth_token.decode_auth_token(auth_token)
             if not Helper.is_bad_token(resp):
                 try:
                     # insert the token

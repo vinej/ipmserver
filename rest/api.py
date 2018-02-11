@@ -10,9 +10,10 @@ class Api:
 
     async def get(self, request, document):
         db = self.app.mongo[api_database]
-        #isok = await self.auth_token.check_token(request.headers['Authorization'])
-        #if not isok:
-        #    return Helper.response_401(request)
+
+        isok = await self.auth_token.check_token(request)
+        if not isok:
+            return Helper.response_401(request)
 
         output = []
         docs = await db[document].find().to_list(length=100)
@@ -28,7 +29,8 @@ class Api:
         if request.json is None:
             return
 
-        if not self.auth_token.check_token(request.headers['auth_token']):
+        isok = await self.auth_token.check_token(request)
+        if not isok:
             return Helper.response_401(request)
 
         record['isNew'] = False
@@ -41,7 +43,9 @@ class Api:
     async def put(self, request, document):
         db = self.app.mongo[api_database]
         record = request.json
-        if not self.auth_token.check_token(request.headers['auth_token']):
+
+        isok = await self.auth_token.check_token(request)
+        if not isok:
             return Helper.response_401(request)
 
         record['isNew'] = False
