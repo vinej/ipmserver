@@ -5,27 +5,27 @@ from rest.user import User
 from rest.auth_token import AuthToken
 from rest.black_list_token import BlacklistToken
 import bcrypt
+import logging
 
 class Auth:
 
-    mongo = None
+    def __init__(self, app):
+        self.app = app
+        self.user = User(app)
+        self.auth_token = AuthToken(app)
+        self.black_list_token = BlacklistToken(app)
 
-    @staticmethod
-    def set_app(app):
-        Auth.mongo = app.mongo
-
-    @staticmethod
-    async def register(request):
+    async def register(self, request):
         # get the post data
         post_data = request.json
         # check if user already exists
-        the_user = await User.get_user(post_data.get('email'))
+        the_user = await self.user.get_user(post_data.get('email'))
         if not the_user:
             try:
                 # insert the user
-                the_user = await User.post_user(post_data.get('email'), post_data.get('password'), True)
+                the_user = await self.user.post_user(post_data.get('email'), post_data.get('password'), True)
                 # generate the auth token
-                auth_token = AuthToken.encode_auth_token(the_user.id)
+                auth_token = self.auth_token.encode_auth_token(the_user.id)
                 response_object = {
                     'status': 'success',
                     'message': 'Successfully registered.',
@@ -46,18 +46,15 @@ class Auth:
             }
             return Helper.make_response(response_object, 202)
 
-    @staticmethod
-    async def login(request):
+    async def login(self, request):
         # get the post data
         post_data = request.json
-        print(post_data)
+        logging.debug(post_data)
         try:
             # fetch the user data
-            the_user = await User.get_user(post_data.get('email'))
-            #if the_user and post_data.get('password') == the_user.password:
+            the_user = await self.user.get_user(post_data.get('email'))
             if the_user and bcrypt.checkpw(post_data.get('password').encode('utf8'), the_user.password):
-                auth_token = AuthToken.encode_auth_token(the_user.id)
-                print(auth_token)
+                auth_token = self.auth_token.encode_auth_token(the_user.id)
                 if auth_token:
                     response_object = {
                         'status': 'success',
@@ -79,8 +76,7 @@ class Auth:
             }
             return Helper.make_response(response_object, 500)
 
-    @staticmethod
-    async def user(request):
+    async def user(self, request):
         # get the auth token
         auth_header = request.headers.get('Authorization')
         if auth_header:
@@ -96,9 +92,9 @@ class Auth:
             auth_token = ''
 
         if auth_token:
-            resp = AuthToken.decode_auth_token(auth_token)
+            resp = self.auth_token.decode_auth_token(auth_token)
             if not Helper.is_bad_token(resp):
-                the_user = await User.get_user_by_id(resp)
+                the_user = await self.user.get_user_by_id(resp)
                 response_object = {
                     'status': 'success',
                     'data': {
@@ -122,8 +118,7 @@ class Auth:
             }
             return Helper.make_response(response_object, 401)
 
-    @staticmethod
-    async def logout(request):
+    async def logout(self, request):
         # get auth token
         auth_header = request.headers.get('Authorization')
         if auth_header:
@@ -132,11 +127,11 @@ class Auth:
             auth_token = ''
 
         if auth_token:
-            resp = AuthToken.decode_auth_token(auth_token)
+            resp = self.auth_token.decode_auth_token(auth_token)
             if not Helper.is_bad_token(resp):
                 try:
                     # insert the token
-                    await BlacklistToken.post_blacklist(auth_token)
+                    await self.black_list_token.post_blacklist(auth_token)
                     response_object = {
                         'status': 'success',
                         'message': 'Successfully logged out.'
