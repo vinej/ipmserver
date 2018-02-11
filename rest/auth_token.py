@@ -34,7 +34,7 @@ class AuthToken:
         logging.debug(f'encode_auth_token : {user_id}')
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=500),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
