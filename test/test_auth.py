@@ -1,6 +1,6 @@
 import unittest
 from httplib2 import Http
-import json
+import ujson
 
 root = "http://127.0.0.1:8000"
 
@@ -23,29 +23,29 @@ class AuthTestCase(unittest.TestCase):
     def test_resister(self):
         data = {'email': 'jyvinet2@hotmail.ca', 'password': '123456'}
         (resp_headers, content) = self.h.request(root+"/auth/register", "POST",
-                                                 headers=self.headers, body=json.dumps(data))
-        body = json.loads(content)
+                                                 headers=self.headers, body=ujson.dumps(data))
+        body = ujson.loads(content)
         self.assertTrue(resp_headers.status == 201)
         self.assertTrue('auth_token' in body)
 
     def test_login(self):
         data = {'email': 'jyvinet2@hotmail.ca', 'password': '123456'}
-        self.h.request(root + "/auth/register", "POST", headers=self.headers, body=json.dumps(data))
+        self.h.request(root + "/auth/register", "POST", headers=self.headers, body=ujson.dumps(data))
 
         data = {'email': 'jyvinet2@hotmail.ca', 'password': '123456'}
         (resp_headers, content) = self.h.request(root+"/auth/login", "POST",
-                                                 headers=self.headers, body=json.dumps(data))
-        body = json.loads(content)
+                                                 headers=self.headers, body=ujson.dumps(data))
+        body = ujson.loads(content)
         self.assertTrue(resp_headers.status == 200)
         self.assertTrue('auth_token' in body)
 
     def test_logout(self):
         data = {'email': 'jyvinet2@hotmail.ca', 'password': '123456'}
-        self.h.request(root + "/auth/register", "POST", headers=self.headers, body=json.dumps(data))
+        self.h.request(root + "/auth/register", "POST", headers=self.headers, body=ujson.dumps(data))
 
         (resp_headers, content) = self.h.request(root+"/auth/login", "POST",
-                                                 headers=self.headers, body=json.dumps(data))
-        body = json.loads(content)
+                                                 headers=self.headers, body=ujson.dumps(data))
+        body = ujson.loads(content)
         self.headers["Authorization"] = "Bearer " + body["auth_token"]
 
         (resp_headers, content) = self.h.request(root+"/auth/logout", "POST", headers=self.headers)

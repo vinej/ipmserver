@@ -7,6 +7,7 @@ from rest.black_list_token import BlacklistToken
 import bcrypt
 import logging
 
+
 class Auth:
 
     def __init__(self, app):

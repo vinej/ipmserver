@@ -1,6 +1,6 @@
 import unittest
 from httplib2 import Http
-import json
+import ujson
 
 root = "http://127.0.0.1:8000"
 
@@ -27,9 +27,9 @@ class ApiTestCase(unittest.TestCase):
     def test_api_with_token(self):
         data = {'email': 'jyvinet2@hotmail.ca', 'password': '123456'}
         (resp_headers, content) = self.h.request(root + "/auth/register", "POST",
-                                                 headers=self.headers, body=json.dumps(data))
+                                                 headers=self.headers, body=ujson.dumps(data))
 
-        body = json.loads(content)
+        body = ujson.loads(content)
 
         self.headers["Authorization"] = "Bearer " + body["auth_token"]
         (resp_headers, content) = self.h.request(root + "/api/companies", "GET", headers=self.headers)

@@ -1,0 +1,8 @@
+sanic
+sanic-mongo
+pyjwt
+bcrypt
+httplib2
+ujson
+pymongo
+bson
