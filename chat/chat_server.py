@@ -3,7 +3,6 @@ from sanic import (
     response
 )
 from websockets.exceptions import ConnectionClosed
-
 from chat.room_manager import RoomManager
 
 

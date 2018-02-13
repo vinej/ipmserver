@@ -15,7 +15,7 @@ class RoomManager:
         self.rooms = {}
         self.client_room = {}
 
-    def get_room(self, client):
+    def get(self, client):
         if client.id in self.client_room:
             return self.client_room[client.id]
         else:
@@ -39,7 +39,7 @@ class RoomManager:
         if message[0] == '/':
             await self.execute(client, message)
         else:
-            room = self.get_room(client)
+            room = self.get(client)
             await room.send_message(message)
 
     def leave(self, client):
@@ -61,7 +61,7 @@ class RoomManager:
             return
 
         if cmd[0] == '/list':
-            room = self.get_room(client)
+            room = self.get(client)
             new_message = ','.join([r.name for r in list(self.rooms.values())])
             await room.send_message(new_message)
 

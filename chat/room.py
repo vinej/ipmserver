@@ -41,7 +41,3 @@ class Room:
 
     def __len__(self):
         return len(self.clients)
-
-
-if __name__ == "__main__":
-    print('running the server...')

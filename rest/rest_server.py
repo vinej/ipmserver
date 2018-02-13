@@ -5,6 +5,8 @@ import os
 from rest.api import Api
 from rest.auth import Auth
 from rest.admin import Admin
+from chat.room_manager import RoomManager
+from websockets.exceptions import ConnectionClosed
 
 
 class Server:
@@ -14,6 +16,7 @@ class Server:
         self.auth = Auth(myapp)
         self.api = Api(myapp)
         self.admin = Admin(app)
+        self.room_manager = RoomManager()
         self.myapp_settings = os.getenv(
             'APP_SETTINGS',
             'project.server.config.DevelopmentConfig'
@@ -40,6 +43,17 @@ class Server:
         self.myapp.add_route(self.auth.login, '/auth/login', methods=['POST'])
         self.myapp.add_route(self.auth.user, '/auth/user', methods=['GET'])
         self.myapp.add_route(self.admin.command, '/admin/<cmd>', methods=['GET'])
+        self.myapp.add_websocket_route(self.feed, '/chat')
+
+    async def feed(self, request, ws):
+        while True:
+            try:
+                message = await ws.recv()
+            except ConnectionClosed:
+                self.room_manager.leave(ws)
+                break
+            else:
+                await self.room_manager.manage(ws, message)
 
     def set_get_app(self):
         self.set()
