@@ -6,3 +6,5 @@ httplib2
 ujson
 pymongo
 bson
+websockets
+uuid
