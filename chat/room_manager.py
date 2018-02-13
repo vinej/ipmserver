@@ -1,6 +1,6 @@
 
 from uuid import uuid4
-from InfoNetPm.chatserver.room import Room
+from chat.room import Room
 
 
 class RoomManager:

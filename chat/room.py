@@ -1,4 +1,4 @@
-# chatserver/room/auth/views.py
+# chat/room/auth/views.py
 
 from collections import deque
 from websockets import ConnectionClosed

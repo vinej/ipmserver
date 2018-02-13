@@ -1,14 +1,6 @@
 import unittest
 
-from .room import Room
-from .server import app
-
-
-class Server(unittest.TestCase):
-    def test_index_returns_200(self):
-        request, response = app.test_client.get('/')
-        print(response.status)
-        assert response.status == 200
+from chat.room import Room
 
 
 class RoomTest(unittest.TestCase):
